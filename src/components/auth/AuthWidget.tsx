@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -5,7 +6,7 @@ import { useRef, useState } from "react";
 import { MdList as ListIcon, MdLogout as LogoutIcon } from "react-icons/md";
 import { MdLogin as LoginIcon } from "react-icons/md";
 
-import { LoadingSpinner } from "@components/LoadingSpinner";
+import { LoadingSpinner } from "@components/util/LoadingSpinner";
 import { useAuth } from "@lib/firebase/hooks/useAuth";
 import { useOutsideAlerter } from "@lib/hooks/useOutsideAlerter";
 
@@ -36,7 +37,7 @@ function UserView() {
     if (!user) return null;
 
     return (
-        <div className="relative" ref={profileRef}>
+        <div className="relative select-none" ref={profileRef}>
             <div className="relative w-10 h-10 rounded-full overflow-hidden cursor-pointer" onClick={handleOpen}>
                 <Image
                     src={user.photoUrl || ""}
@@ -47,24 +48,31 @@ function UserView() {
                 />
             </div>
 
-            {open && (
-                <div className="absolute bg-white text-black top-11 w-40 right-0 rounded py-2">
-                    <ul>
-                        {menuItems.map((m) => (
-                            <li
-                                key={m.label}
-                                onClick={m.onClick}
-                                className="flex flex-row items-center px-3 py-1 hover:bg-black/10 cursor-pointer"
-                            >
-                                <span className="mr-2">
-                                    <m.icon />
-                                </span>
-                                <span>{m.label}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        className="absolute bg-white text-black top-11 w-40 right-0 rounded py-2"
+                        initial={{ scale: 0, transformOrigin: "90% 0%" }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                    >
+                        <ul>
+                            {menuItems.map((m) => (
+                                <li
+                                    key={m.label}
+                                    onClick={m.onClick}
+                                    className="flex flex-row items-center px-3 py-1 hover:bg-black/10 cursor-pointer"
+                                >
+                                    <span className="mr-2">
+                                        <m.icon />
+                                    </span>
+                                    <span>{m.label}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
